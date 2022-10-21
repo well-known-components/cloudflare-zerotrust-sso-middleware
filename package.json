@@ -1,5 +1,5 @@
 {
-  "name": "@well-known-components/base-component",
+  "name": "@well-known-components/cloudflare-zerotrust-sso-middleware",
   "version": "1.0.0",
   "description": "base component",
   "main": "dist/index.js",
@@ -7,27 +7,37 @@
   "scripts": {},
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/well-known-components/base-component.git"
+    "url": "git+https://github.com/well-known-components/cloudflare-zerotrust-sso-middleware.git"
   },
   "keywords": [],
   "author": "",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/well-known-components/base-component/issues"
+    "url": "https://github.com/well-known-components/cloudflare-zerotrust-sso-middleware/issues"
   },
   "prettier": {
     "printWidth": 120,
     "semi": false
   },
-  "homepage": "https://github.com/well-known-components/base-component#readme",
+  "homepage": "https://github.com/well-known-components/cloudflare-zerotrust-sso-middleware#readme",
   "devDependencies": {
     "@microsoft/api-extractor": "^7.17.0",
     "@types/jest": "^28.1.0",
+    "@well-known-components/env-config-provider": "^1.2.0",
+    "@well-known-components/http-server": "^1.1.6",
+    "@well-known-components/logger": "^3.0.0",
     "jest": "^28.1.0",
     "ts-jest": "^28.0.4",
-    "typescript": "^4.7.3"
+    "typescript": "^4.7.3",
+    "@types/node": "^18.11.3"
   },
   "files": [
     "dist"
-  ]
+  ],
+  "dependencies": {
+    "@well-known-components/interfaces": "^1.1.2",
+    "@well-known-components/test-helpers": "^1.4.0",
+    "jwt-decode": "^3.1.2",
+    "rfc4648": "^1.5.2"
+  }
 }
