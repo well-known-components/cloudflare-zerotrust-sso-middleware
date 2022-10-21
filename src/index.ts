@@ -71,12 +71,15 @@ export async function createCloudflareAuthenticator<Context>(
         try {
           // Validate Cloudflare Access JWT token and return decoded data
           const decodedJwt = await verifyCloudflareAccessJwt(components, ctx.request, config)
-          if (!decodedJwt.success) {
-            throw new Error(decodedJwt.error)
+
+          if (decodedJwt.success && decodedJwt.payload) {
+            // Pass user info to next handlers
+            setUser(ctx, decodedJwt.payload)
           }
 
-          // Pass user info to next handlers
-          setUser(ctx, decodedJwt.payload)
+          if (!decodedJwt.success && decodedJwt.error) {
+            throw new Error(decodedJwt.error)
+          }
 
           return next()
         } catch (e: any) {
@@ -101,7 +104,7 @@ const verifyCloudflareAccessJwt = async (
 
     // Make sure JWT or client id/secret was passed
     if (!jwtToken) {
-      throw new Error("Missing Cf-Access-Jwt-Assertion header, make sure this endpoint is behind Cloudflare Access")
+      return { success: false }
     }
 
     const header = jwt_decode(jwtToken, { header: true }) as JwtPayloadExtended
