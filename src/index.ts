@@ -136,21 +136,30 @@ const verifyCloudflareAccessJwt = async (
   }
 }
 
+type JwkKeys = {
+  keys: Record<string, string>[]
+}
+
+let cache = new Map<string, JwkKeys>()
+
+async function fetchAndCache(team: string, components: Pick<RequiredComponents, "fetch">): Promise<JwkKeys> {
+  const apiRes = await components.fetch.fetch(`https://${team}.cloudflareaccess.com/cdn-cgi/access/certs`)
+  const keys = (await apiRes.json()) as JwkKeys
+  cache.set(team, keys)
+  return keys
+}
+
 // Get Cloudflare Access jwk for key id
 const getCloudflareAccessJwk = async (
   components: Pick<RequiredComponents, "fetch">,
   kid: string,
   config: CloudflareConfig
 ) => {
-  type JwkKeys = {
-    keys: Record<string, string>[]
-  }
+  const res = cache.has(config.CF_ACCESS_TEAM_NAME)
+    ? cache.get(config.CF_ACCESS_TEAM_NAME)!
+    : await fetchAndCache(config.CF_ACCESS_TEAM_NAME, components)
 
-  // TODO implement caching
-  const apiRes = await components.fetch.fetch(
-    `https://${config.CF_ACCESS_TEAM_NAME}.cloudflareaccess.com/cdn-cgi/access/certs`
-  )
-  return ((await apiRes.json()) as JwkKeys).keys.find((x) => x.kid === kid)
+  return res.keys.find((x) => x.kid === kid)
 }
 
 const verifyJwtSignature = (jwsObject: string, jwk: any) => {
